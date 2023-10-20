@@ -1,0 +1,20 @@
+Why is the create method not used to create a memory for analysis ports in UVM?
+We can use create method also for creating memory for tlm ports/analysis ports it won't give any error.
+
+But the thing is why don't we use create method for tlm ports. It's because we are using create method when it comes to factory overriding which is normally used for components and objects .
+
+For components
+
+Class_h = class name ::type_id::create(“class_h”,this);
+
+For objects :
+
+Class_h=class name ::type_id::create (“class_h”)
+
+so here what happens is with particular type_id ,it will check in factory it will see whether it's override by type , override by instance. If we don't have both condition then it will ultimately call new constructor where memory is allocated for particular component or object.
+
+For analysis ports :
+
+Port_h=new(“port_h”,this);
+
+Here analysis ports don't come in factory concept, we don't need to override it. As we know tlm is transaction level modelling which supports multiple languages and it is used as a message passing system between monitor and multiple destination( scoreboard and coverage block) Therefore even we use create for this ,it won't go in factory for particular port so therefore we use new method( just allocation of memory ) .
