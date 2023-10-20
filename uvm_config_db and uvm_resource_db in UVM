@@ -1,0 +1,54 @@
+What is the difference between uvm_config_db and uvm_resource_db in UVM?
+Before jumping directly into the difference let's look at the set function/method declaration both in uvm_config_db and uvm_resource_db.
+
+All the methods declared in both them are static in nature so it should be declared with scope resolution operator as uvm_config_db::set() and uvm_resource_db::set().
+
+So let look at the declaration of each one of them:-
+
+uvm_config_db:-
+
+static function void set(uvm_component cntxt,
+
+string inst_name,
+
+string field_name,
+
+T value )
+
+uvm_resource_db:-
+
+static function void set(input string scope,
+
+input string name,
+
+T value,
+
+input uvm_object accessor = null)
+
+Difference Number 1:-
+
+By looking at the definition of the methods in each case it is noted that in case of uvm_config_db instance name is there while in case of uvm_resource_db it is absent.
+
+So uvm_config_db is primarily used in places to access the resource or parameters where hierarchy is important while uvm_resource_db should be used in places to access the resources in case of non-hierarchial context.
+
+Ex:-
+
+Virtual interfaces while communicating through uvm_config_db is needed since it is in the form of hierarchy.That means entries are registered in configuration table in the form of (name,value) pair and from their virtual interface got the access and pass it down to the levels of hierarchy as “top.env.agent.driver”and then later on config the environment via set/get config calls.
+
+So this is one practical scenario where only uvm_config_db works.
+
+Now in any case if we need to update any parameter on the TB component through set/get which has nothing to do with upper layers of hierarchy that time we can use uvm_resource_db.
+
+Difference Number 2:-
+
+The class declaration of uvm_resource_db and uvm_config_db are:-
+
+class uvm_resource_db#(type T = uvm_object)
+
+class uvm-config_db#(type T = int) extends uvm_resource_db
+
+So the default type of uvm_resource_db is uvm_object and the default type for uvm_config_db is int.
+
+Difference Number 3:-
+
+The number of methods for uvm_config_db are limited mainly 4 such as get,set,exists and wait_modified while the methods for uvm_resource_db are more like get_by_type,get_by_name,set,read_by_name,read_by_type,write_by_name,write_by_type,set_anonymous.
